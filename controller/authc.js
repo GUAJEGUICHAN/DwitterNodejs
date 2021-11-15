@@ -2,15 +2,11 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import  'express-async-errors';
 import * as userRepository from '../data/auth.js'
-
-const jwtSecretKey = 'secretKey';
-const jwtExpiresInDays = '2d';
-const bcryptSaltRounds =12;
+import {config}from'../config.js'
 
 
 export async function getAuth (req, res,next){
             res.status(201).send('GET /AUTH');
-
 }
 
 export async function addMember (req, res,next){
@@ -21,7 +17,7 @@ export async function addMember (req, res,next){
         return res.status(409).json({message:`${username} already exitss ${found}`});
     }
     //비번 암호화
-    const hashed = await bcrypt.hash(password, bcryptSaltRounds)
+    const hashed = await bcrypt.hash(password,config.bcrypt.saltRounds)
     //계정 생성
     const userId = await userRepository.createUser({
         username,
@@ -53,7 +49,7 @@ export async function login (req, res,next){
 }
 
 function createJwtToken(id){
-    return jwt.sign({id}, jwtSecretKey, {expiresIn:jwtExpiresInDays});
+    return jwt.sign({id}, config.jwt.secretKey, {expiresIn:config.jwt.expiresInSec, });
 }
 
 export async function me (req, res,next){
@@ -64,4 +60,3 @@ const user = await userRepository.findById(req.userId);//받아온 req에 userId
     //위의 검증을 통과했군 = 있군 // 그럼 토큰값 다시 보내주고 유저이름도 보내주자
     res.status(200).json({token:req.token, username:user.username});
 }
-

@@ -21,8 +21,7 @@ const validateSignup=[
 const router = express.Router();
 router.get('/',AuthController.getAuth)
 router.post('/login',validateCredential,AuthController.login);
-router.post('/signup',validateSignup,
-AuthController.addMember)
+router.post('/signup',validateSignup,AuthController.addMember)
 router.get('/me',isAuth,AuthController.me)
 
 
